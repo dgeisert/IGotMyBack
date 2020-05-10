@@ -12,7 +12,8 @@ public class Char : MonoBehaviour
     float lastHit;
     public Scarf healthScarf;
 
-    public Transform projectileSpawnPoint;
+    public Transform projectileSpawnPoint, cloneProjectileSpawnPoint;
+    public Transform clone;
     float lastFire;
 
     public bool dash = false;
@@ -49,6 +50,7 @@ public class Char : MonoBehaviour
         UpdateHealth(0);
         SceneManager.sceneLoaded += OnSceneLoaded;
         Setup();
+        clone.SetParent(null);
     }
 
     void OnDestroy()
@@ -99,13 +101,19 @@ public class Char : MonoBehaviour
         {
             mov -= Vector3.right;
         }
-        Move(mov.normalized);
 
         shooting = Controls.Shoot;
+        clone.gameObject.SetActive(shooting);
         if (shooting)
         {
             Shoot();
         }
+        else
+        {
+            clone.position = transform.position;
+        }
+
+        Move(mov.normalized);
 
         collisionFrameSkipper++;
         if (collisionFrameSkipper >= 10)
@@ -127,9 +135,11 @@ public class Char : MonoBehaviour
     public void Move(Vector3 dir)
     {
         transform.position += dir * Time.unscaledDeltaTime * speed;
+        clone.position -= dir * Time.unscaledDeltaTime * speed;
         if (!shooting)
         {
             transform.LookAt(transform.position + dir);
+            clone.LookAt(clone.position - dir);
         }
     }
     public void Dash()
@@ -148,6 +158,7 @@ public class Char : MonoBehaviour
             {
                 float shift = i * 10 - (attackCount - 1) / 2;
                 ProjectileManager.PlacePlayerProjectile(projectileSpawnPoint.position, projectileSpawnPoint.eulerAngles.y + shift, 100, projectileSpeed);
+                ProjectileManager.PlacePlayerProjectile(cloneProjectileSpawnPoint.position, cloneProjectileSpawnPoint.eulerAngles.y + shift, 100, projectileSpeed);
             }
         }
     }
