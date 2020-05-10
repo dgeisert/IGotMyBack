@@ -244,7 +244,7 @@ MonoBehaviour:
   speed: 3
   deathParticles: {fileID: 2694924781644866750, guid: 51cda7c33b09d4ad6972173b2e68f56c,
     type: 3}
-  size: 1
+  size: 0.6
   alertAudio: {fileID: 8300000, guid: b65a67459facd4e52afabfbc5b0e1016, type: 3}
   ouchAudio: {fileID: 8300000, guid: c106275cd3b33441796aa528b99bad11, type: 3}
   reward: {fileID: 5995386856466797965, guid: 9c15baf5b7f924f68838888fd39a0589, type: 3}
