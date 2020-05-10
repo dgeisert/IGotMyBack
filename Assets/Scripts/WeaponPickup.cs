@@ -9,11 +9,6 @@ public class WeaponPickup : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        infoDisplay.text = weapon.textName +
-            "\nDamage: " + weapon.damage +
-            "\nRange: " + (weapon.lifetime > 0 ? (weapon.lifetime * weapon.speed) : 100) +
-            "\nMana: " + weapon.cost;
-        infoDisplay.gameObject.SetActive(false);
     }
 
     void OnTriggerEnter(Collider collider)

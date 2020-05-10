@@ -7,26 +7,13 @@ public class Char : MonoBehaviour
 {
     public static Char Instance;
     public CameraFollow cam;
-    public float speed;
     Vector3 mov;
-    public float health = 5;
     public float invicibleAfterHit = 0.2f;
     float lastHit;
     public Scarf healthScarf;
-    int layerMask = 1 << 8;
-
-    public float mana;
-    public float manaMax;
-    public Scarf manaScarf;
-    public float recharge;
-    public float waitRecharge;
-    float lastManaSpend;
 
     public Transform projectileSpawnPoint;
-
-    public Projectile primaryProjectile;
-
-    public Projectile altProjectile;
+    float lastFire;
 
     public bool dash = false;
     public float dashCost;
@@ -38,6 +25,16 @@ public class Char : MonoBehaviour
     AudioSource audioSource;
     public AudioClip dashAudio;
     public AudioClip ouchAudio;
+    public bool shooting;
+    int projectileLayerMask = 1 << 9;
+    int collisionFrameSkipper = 0;
+
+    public float projectileSpeed = 10;
+    public float fireRate = 1;
+    public float health = 5;
+    public float maxHealth = 5;
+    public float speed;
+    public int attackCount = 1;
 
     WeaponPickup activePickup;
 
@@ -50,7 +47,6 @@ public class Char : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         UpdateHealth(0);
-        UpdateMana(0);
         SceneManager.sceneLoaded += OnSceneLoaded;
         Setup();
     }
@@ -105,117 +101,55 @@ public class Char : MonoBehaviour
         }
         Move(mov.normalized);
 
-        // Player Rotation
-        Look();
-
-        //Other player controls
-        if (Controls.PickUpDropPrimary)
+        shooting = Controls.Shoot;
+        if (shooting)
         {
-            PickUpDrop(true);
-        }
-        if (Controls.PickUpDropAlt)
-        {
-            PickUpDrop(false);
-        }
-        if (Controls.Dash && lastDash + dashDuration + dashCooldown < Time.time)
-        {
-            Dash();
-        }
-        if (Controls.Shoot)
-        {
-            Shoot(primaryProjectile);
-        }
-        if (Controls.AltShoot)
-        {
-            Shoot(altProjectile);
+            Shoot();
         }
 
-        //Player recharge and deactivations
-        if (lastDash + dashDuration < Time.time)
+        collisionFrameSkipper++;
+        if (collisionFrameSkipper >= 10)
         {
-            dash = false;
-        }
-        if (lastManaSpend + waitRecharge < Time.time && mana < manaMax)
-        {
-            UpdateMana(recharge * Time.deltaTime);
+            return;
+            collisionFrameSkipper = 0;
+            foreach (Collider col in Physics.OverlapSphere(transform.position, 0.5f, projectileLayerMask, QueryTriggerInteraction.Collide))
+            {
+                Projectile proj = col.GetComponent<Projectile>();
+                if (proj != null)
+                {
+                    UpdateHealth(-proj.damage);
+                    proj.DestroyProjectile();
+                }
+            }
         }
     }
 
     public void Move(Vector3 dir)
     {
-        transform.position += dir * Time.unscaledDeltaTime * speed * (dash ? dashSpeed : 1);
-    }
-
-    public void PickUpDrop(bool primary)
-    {
-        if (activePickup)
+        transform.position += dir * Time.unscaledDeltaTime * speed;
+        if (!shooting)
         {
-            Instantiate((primary ? primaryProjectile : altProjectile).pickup.gameObject, transform.position, Quaternion.identity);
-            if (primary)
-            {
-                primaryProjectile = activePickup.weapon;
-            }
-            else
-            {
-                altProjectile = activePickup.weapon;
-            }
-            Destroy(activePickup.gameObject);
-            activePickup = null;
+            transform.LookAt(transform.position + dir);
         }
     }
     public void Dash()
     {
-        if (UpdateMana(-dashCost))
-        {
-            audioSource.clip = dashAudio;
-            audioSource.Play();
-            dash = true;
-            lastDash = Time.time;
-        }
+        audioSource.clip = dashAudio;
+        audioSource.Play();
+        dash = true;
+        lastDash = Time.time;
     }
-    public void Shoot(Projectile projectile)
+    public void Shoot()
     {
-        if (UpdateMana(-projectile.cost))
+        if (lastFire + fireRate < Time.time)
         {
-            Instantiate(projectile, projectileSpawnPoint.position, projectileSpawnPoint.rotation).player = true;
-        }
-    }
-
-    public void Look()
-    {
-        RaycastHit hit = GetMousePoint();
-        transform.LookAt(hit.point);
-        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-    }
-
-    public RaycastHit GetMousePoint()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 50f, layerMask))
-        {
-            Transform objectHit = hit.transform;
-        }
-        return hit;
-    }
-
-    bool UpdateMana(float amount)
-    {
-        if (amount < 0)
-        {
-            lastManaSpend = Time.time;
-            if (mana + amount < 0)
+            lastFire = Time.time;
+            for (int i = 0; i < attackCount; i++)
             {
-                return false;
+                float shift = i * 10 - (attackCount - 1) / 2;
+                ProjectileManager.PlacePlayerProjectile(projectileSpawnPoint.position, projectileSpawnPoint.eulerAngles.y + shift, 100, projectileSpeed);
             }
         }
-        mana += amount;
-        if (mana > manaMax)
-        {
-            mana = manaMax;
-        }
-        manaScarf.SetLength(mana / 20);
-        return true;
     }
 
     public void UpdateHealth(float amount)

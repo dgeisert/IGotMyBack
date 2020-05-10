@@ -48,28 +48,21 @@ public class Controls : MonoBehaviour
     {
         get
         {
-            return Input.GetMouseButtonDown(0);
+            return Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space);
         }
     }
-    public static bool AltShoot
+    public static bool StartShoot
     {
         get
         {
-            return Input.GetMouseButtonDown(1);
+            return Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space);
         }
     }
-    public static bool PickUpDropPrimary
+    public static bool EndShoot
     {
         get
         {
-            return Input.GetKeyDown(KeyCode.Q);
-        }
-    }
-    public static bool PickUpDropAlt
-    {
-        get
-        {
-            return Input.GetKeyDown(KeyCode.E);
+            return Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space);
         }
     }
     public static bool Pause

@@ -9,7 +9,13 @@ public class Game : MonoBehaviour
     public ScoreScreen scoreScreen;
     public InGameUI inGameUI;
     public List<Enemy> enemies;
+    public List<Enemy> enemyPrefabs;
+    Transform[] spawnPoints;
+    public Transform spawnPointParent;
+    public float spawnArea = 20;
+    public float spawnDistance = 40;
     public bool active = true;
+    int wave = 1;
     public static float Score
     {
         get
@@ -42,12 +48,8 @@ public class Game : MonoBehaviour
         pauseMenu.gameObject.SetActive(false);
         scoreScreen.gameObject.SetActive(false);
         inGameUI.gameObject.SetActive(true);
-        DontDestroyOnLoad(pauseMenu.gameObject);
-        DontDestroyOnLoad(scoreScreen.gameObject);
-        DontDestroyOnLoad(inGameUI.gameObject);
         Time.timeScale = 1;
         Score = 0;
-        SceneChanger.LoadLevel();
     }
 
     // Update is called once per frame
@@ -58,6 +60,36 @@ public class Game : MonoBehaviour
             if (Controls.Pause)
             {
                 Pause();
+            }
+        }
+        if (enemies.Count == 0)
+        {
+            wave++;
+            if (spawnPoints == null || spawnPoints.Length <= 0)
+            {
+                spawnPoints = new Transform[spawnPointParent.childCount];
+                for (int i = 0; i < spawnPointParent.childCount; i++)
+                {
+                    spawnPoints[i] = spawnPointParent.GetChild(i);
+                }
+            }
+            Transform spawnPoint = spawnPoints[Mathf.FloorToInt(Random.value * spawnPoints.Length)];
+            while (Vector3.Distance(spawnPoint.position, Char.Instance.transform.position) < spawnDistance)
+            {
+                int index = Mathf.FloorToInt(Random.value * spawnPoints.Length);
+                try
+                {
+                    spawnPoint = spawnPoints[index];
+                }
+                catch
+                {
+                    Debug.Log(index);
+                }
+            }
+            for (int i = 0; i < wave; i++)
+            {
+                Vector3 shift = new Vector3((Random.value - 0.5f) * spawnArea, 0, (Random.value - 0.5f) * spawnArea);
+                enemies.Add(Instantiate(enemyPrefabs[Mathf.FloorToInt(enemyPrefabs.Count * Random.value)], spawnPoint.position + shift, Quaternion.identity));
             }
         }
     }
