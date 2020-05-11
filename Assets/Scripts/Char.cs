@@ -154,6 +154,8 @@ public class Char : MonoBehaviour
         if (lastFire + fireRate < Time.time)
         {
             lastFire = Time.time;
+            fireRate *= 1.05f;
+            projectileSpeed /= 1.05f;
             shoot.SetActive(false);
             shoot.SetActive(true);
             for (int i = 0; i < attackCount; i++)
