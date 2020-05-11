@@ -27,7 +27,7 @@ public class Leaderboard_SampleScript : MonoBehaviour
 		rankText.text = "Posting Score To Leaderboard...";
 		scoreText.text = "";
 		new GameSparks.Api.Requests.LogEventRequest()
-			.SetEventKey("SUBMIT_SCORE")
+			.SetEventKey("SUBMIT_SCORE_JABRIL")
 			.SetEventAttribute("SCORE", Game.Score.ToString())
 			.Send((response) =>
 			{
@@ -49,7 +49,7 @@ public class Leaderboard_SampleScript : MonoBehaviour
 		Debug.Log("Fetching Leaderboard Data...");
 
 		new GameSparks.Api.Requests.LeaderboardDataRequest()
-			.SetLeaderboardShortCode("HIGHSCORE_LEADERBOARD")
+			.SetLeaderboardShortCode("JABRIL_LEADERBOARD")
 			.SetEntryCount(25) // we need to parse this text input, since the entry count only takes long
 			.Send((response) =>
 			{
