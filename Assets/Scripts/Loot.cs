@@ -17,10 +17,6 @@ public class Loot : MonoBehaviour
 
     void OnTriggerEnter(Collider col)
     {
-        if (Char.Instance.health >= Char.Instance.maxHealth && lootType == LootType.HEALTH)
-        {
-            lootType = LootType.FIRERATE;
-        }
         Char c = col.GetComponentInParent<Char>();
         if (c != null)
         {
@@ -33,16 +29,17 @@ public class Loot : MonoBehaviour
                     c.attackCount++;
                     break;
                 case LootType.PROJECTILESPEED:
-                    c.projectileSpeed *= 1.2f;
+                    c.projectileSpeed += 4f;
                     break;
                 case LootType.SPEED:
-                    c.speed *= 1.2f;
+                    c.speed += 0.25f;
                     break;
                 case LootType.FIRERATE:
-                    c.fireRate /= 1.2f;
+                    c.fireRate /= 1.5f;
                     break;
             }
             Destroy(gameObject);
         }
+        c.UpgradeInit();
     }
 }

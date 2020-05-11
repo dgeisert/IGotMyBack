@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
     public Transform attackSpawnLoc;
     public float speed;
     public GameObject deathParticles;
+    public GameObject shoot;
     int patrolPoint;
     float wanderTime;
     float wanderDir;
@@ -78,6 +79,8 @@ public class Enemy : MonoBehaviour
 
     void Attack()
     {
+        shoot.SetActive(false);
+        shoot.SetActive(true);
         for (int i = 0; i < attackCount; i++)
         {
             float shift = i * attackShift - (attackCount - 1) / 2;

@@ -15,6 +15,7 @@ public class LootManager : MonoBehaviour
 
     public void DropLoot(Vector3 pos)
     {
-        Instantiate(lootDrops[Mathf.FloorToInt(Random.value * lootDrops.Length)], pos, Quaternion.identity);
+        Loot loot = lootDrops[Mathf.FloorToInt(Random.value * (lootDrops.Length - (Char.Instance.health >= Char.Instance.maxHealth ? 1 : 0)))];
+        Instantiate(loot, pos, Quaternion.identity);
     }
 }

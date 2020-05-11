@@ -6,16 +6,13 @@ using UnityEngine;
 public class ScoreScreen : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
-    public GameObject victoryDisplay;
-    public GameObject defeatDisplay;
     public void EndGame(bool victory = false)
     {
         Game.Instance.active = false;
         Time.timeScale = 0;
         gameObject.SetActive(true);
-        victoryDisplay.gameObject.SetActive(victory);
-        defeatDisplay.gameObject.SetActive(!victory);
         scoreText.text = Game.Score.ToString("#,#");
+        Leaderboard_SampleScript.Instance.PostScoreBttn();
     }
 
     public void Restart()

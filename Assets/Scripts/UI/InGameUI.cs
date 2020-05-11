@@ -9,6 +9,7 @@ public class InGameUI : MonoBehaviour
     public static InGameUI Instance;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI speachText;
+    public TextMeshProUGUI healthText;
     public GameObject speachArea;
     public bool speach2Said;
     string[] speach1 = new string[]
@@ -76,5 +77,13 @@ public class InGameUI : MonoBehaviour
     public void EndGame(bool victory)
     {
         gameObject.SetActive(false);
+    }
+    public void SetHealth(float h)
+    {
+        healthText.text = "";
+        for (int i = 0; i < h; i++)
+        {
+            healthText.text += "+";
+        }
     }
 }

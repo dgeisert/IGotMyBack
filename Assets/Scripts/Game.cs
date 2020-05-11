@@ -64,33 +64,40 @@ public class Game : MonoBehaviour
         }
         if (enemies.Count == 0)
         {
-            wave++;
-            if (spawnPoints == null || spawnPoints.Length <= 0)
+            SpawnEnemies();
+        }
+    }
+
+    int perGroup = 5;
+    public void SpawnEnemies()
+    {
+        wave++;
+        for (int i = 0; i <= Mathf.FloorToInt(wave / perGroup); i++)
+        {
+            SpawnGroup(Mathf.Min(perGroup, wave - perGroup * i));
+        }
+    }
+
+    public void SpawnGroup(int num)
+    {
+        if (spawnPoints == null || spawnPoints.Length <= 0)
+        {
+            spawnPoints = new Transform[spawnPointParent.childCount];
+            for (int i = 0; i < spawnPointParent.childCount; i++)
             {
-                spawnPoints = new Transform[spawnPointParent.childCount];
-                for (int i = 0; i < spawnPointParent.childCount; i++)
-                {
-                    spawnPoints[i] = spawnPointParent.GetChild(i);
-                }
+                spawnPoints[i] = spawnPointParent.GetChild(i);
             }
-            Transform spawnPoint = spawnPoints[Mathf.FloorToInt(Random.value * spawnPoints.Length)];
-            while (Vector3.Distance(spawnPoint.position, Char.Instance.transform.position) < spawnDistance)
-            {
-                int index = Mathf.FloorToInt(Random.value * spawnPoints.Length);
-                try
-                {
-                    spawnPoint = spawnPoints[index];
-                }
-                catch
-                {
-                    Debug.Log(index);
-                }
-            }
-            for (int i = 0; i < wave; i++)
-            {
-                Vector3 shift = new Vector3((Random.value - 0.5f) * spawnArea, 0, (Random.value - 0.5f) * spawnArea);
-                enemies.Add(Instantiate(enemyPrefabs[Mathf.FloorToInt(enemyPrefabs.Count * Random.value)], spawnPoint.position + shift, Quaternion.identity));
-            }
+        }
+        Transform spawnPoint = spawnPoints[Mathf.FloorToInt(Random.value * spawnPoints.Length)];
+        while (Vector3.Distance(spawnPoint.position, Char.Instance.transform.position) < spawnDistance)
+        {
+            spawnPoint = spawnPoints[Mathf.FloorToInt(Random.value * spawnPoints.Length)];
+        }
+        Enemy chosenEnemy = enemyPrefabs[Mathf.FloorToInt(enemyPrefabs.Count * Random.value)];
+        for (int i = 0; i < num; i++)
+        {
+            Vector3 shift = new Vector3((Random.value - 0.5f) * spawnArea, 0, (Random.value - 0.5f) * spawnArea);
+            enemies.Add(Instantiate(chosenEnemy, spawnPoint.position + shift, Quaternion.identity));
         }
     }
 

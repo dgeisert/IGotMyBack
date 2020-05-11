@@ -9,8 +9,6 @@ public class Menu : MonoBehaviour
     public GameObject settings;
     public GameObject controls;
     public GameObject menu;
-    public GameObject levelSelect;
-    public List<Button> levelSelectButtons = new List<Button>();
     public UnityEngine.Audio.AudioMixer mixer;
     public Image NoMusic;
     public Image NoSound;
@@ -18,18 +16,9 @@ public class Menu : MonoBehaviour
     {
         Time.timeScale = 1;
         OpenMenu(menu);
-        for (int i = 0; i < levelSelectButtons.Count; i++)
-        {
-            if (i + 4 > UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings ||
-                i > PlayerPrefs.GetInt("UnlockedLevel"))
-            {
-                levelSelectButtons[i].interactable = false;
-            }
-        }
     }
-    public void PlayGame(int level)
+    public void PlayGame()
     {
-        PlayerPrefs.SetInt("Level", level);
         SceneChanger.LoadScene(Scenes.Game);
     }
     public void OpenMenu(GameObject panel)
@@ -38,7 +27,6 @@ public class Menu : MonoBehaviour
         menu.SetActive(false);
         controls.SetActive(false);
         settings.SetActive(false);
-        levelSelect.SetActive(false);
         panel.SetActive(true);
     }
     public void MuteMusic()

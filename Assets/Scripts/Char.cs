@@ -24,6 +24,7 @@ public class Char : MonoBehaviour
     float lastDash;
     bool canRecharge;
     AudioSource audioSource;
+    public GameObject upgrade, shoot;
     public AudioClip dashAudio;
     public AudioClip ouchAudio;
     public bool shooting;
@@ -118,9 +119,8 @@ public class Char : MonoBehaviour
         collisionFrameSkipper++;
         if (collisionFrameSkipper >= 10)
         {
-            return;
             collisionFrameSkipper = 0;
-            foreach (Collider col in Physics.OverlapSphere(transform.position, 0.5f, projectileLayerMask, QueryTriggerInteraction.Collide))
+            foreach (Collider col in Physics.OverlapSphere(transform.position, 0.4f, projectileLayerMask, QueryTriggerInteraction.Collide))
             {
                 Projectile proj = col.GetComponent<Projectile>();
                 if (proj != null)
@@ -154,6 +154,8 @@ public class Char : MonoBehaviour
         if (lastFire + fireRate < Time.time)
         {
             lastFire = Time.time;
+            shoot.SetActive(false);
+            shoot.SetActive(true);
             for (int i = 0; i < attackCount; i++)
             {
                 float shift = i * 10 - (attackCount - 1) / 2;
@@ -184,6 +186,10 @@ public class Char : MonoBehaviour
                 Game.Instance.GameOver();
             }
         }
+        if (InGameUI.Instance != null)
+        {
+            InGameUI.Instance.SetHealth(health);
+        }
         healthScarf.SetLength(health);
     }
 
@@ -203,5 +209,10 @@ public class Char : MonoBehaviour
                 activePickup = null;
             }
         }
+    }
+    public void UpgradeInit()
+    {
+        upgrade.SetActive(false);
+        upgrade.SetActive(true);
     }
 }
